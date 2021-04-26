@@ -1,0 +1,39 @@
+name: Manually Build VyOS on SelfHosted
+on:
+  workflow_dispatch:
+    inputs:
+      relver:
+        description: 'Release version'
+        required: true
+
+jobs:
+  build:
+    runs-on: [self-hosted, docker, x64]
+
+    steps:
+    - name: Set env
+      run: echo "RELEASE_VERSION=${{ github.event.inputs.relver }}" >> $GITHUB_ENV
+
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]${GITHUB_REF#refs/heads/}"
+      id: extract_branch
+
+    - name: Pull vyos-build docker image
+      run: |
+        docker pull vyos/vyos-build:${{ steps.extract_branch.outputs.branch }}
+        
+    - name: Build iso
+      run: |
+        git clone -b ${{ steps.extract_branch.outputs.branch }} --single-branch https://github.com/vyos/vyos-build.git
+        cd vyos-build
+        docker run --rm --privileged -v $(pwd):/vyos -w /vyos vyos/vyos-build:${{ steps.extract_branch.outputs.branch }} bash -c './configure --architecture amd64 --build-type release --version "${{ env.RELEASE_VERSION }}" && sudo make iso'
+   
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.myToken }}
+        file: vyos-build/build/vyos-${{ env.RELEASE_VERSION }}-amd64.iso
+        tag: ${{ env.RELEASE_VERSION }}
+        overwrite: true
+        file_glob: true
