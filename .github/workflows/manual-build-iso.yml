@@ -25,6 +25,7 @@ jobs:
         
     - name: Build iso
       run: |
+        rm -rf vyos-build
         git clone -b ${{ steps.extract_branch.outputs.branch }} --single-branch https://github.com/vyos/vyos-build.git
         cd vyos-build
         docker run --rm --privileged -v $(pwd):/vyos -w /vyos vyos/vyos-build:${{ steps.extract_branch.outputs.branch }} bash -c './configure --architecture amd64 --build-type release --version "${{ env.RELEASE_VERSION }}" && sudo make iso'
