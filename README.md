@@ -11,3 +11,5 @@ e.g.
     git tag v1.2.4
     
     git push origin v1.2.4
+
+https://github.com/vyos/vyos-build/commits/equuleus
