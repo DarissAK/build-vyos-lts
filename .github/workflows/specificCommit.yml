@@ -11,7 +11,6 @@ on:
         - crux
       commit:
         description: SHA1 Commit
-        required: true
 
 jobs:
   build:
@@ -37,7 +36,7 @@ jobs:
       run: echo "CODE_VERSION=1.4" >> $GITHUB_ENV
 
     - name: Set release version
-      run: echo "RELEASE_VERSION=${{ env.CODE_VERSION }}-${{ github.event.inputs.commit }}-${{ steps.date.outputs.date }}" >> $GITHUB_ENV
+      run: echo "RELEASE_VERSION=${{ env.CODE_VERSION }}-${{ github.event.inputs.branch }}" >> $GITHUB_ENV
 
     - name: Pull vyos-build docker image
       run: docker pull vyos/vyos-build:${{ github.event.inputs.branch }}
@@ -48,13 +47,15 @@ jobs:
         git clone -b ${{ github.event.inputs.branch }} https://github.com/vyos/vyos-build.git
         cd vyos-build
         git checkout ${{ github.event.inputs.commit }}
-        docker run --rm --privileged -v $(pwd):/vyos -w /vyos vyos/vyos-build:${{ github.event.inputs.branch }} bash -c './configure --architecture amd64 --build-type release --build-by Veduco --version "${{ env.RELEASE_VERSION }}" && sudo make iso'
+        echo "SHA1=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        filename="${{ env.RELEASE_VERSION }}-${env.SHA1}"
+        docker run --rm --privileged -v $(pwd):/vyos -w /vyos vyos/vyos-build:${{ github.event.inputs.branch }} bash -c './configure --architecture amd64 --build-type release --build-by Veduco --version "${filename}" && sudo make iso'
    
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.myToken }}
-        file: vyos-build/build/vyos-${{ env.RELEASE_VERSION }}-amd64.iso
+        file: vyos-build/build/vyos-*.iso
         tag: ${{ env.RELEASE_VERSION }}
         overwrite: true
         file_glob: true
