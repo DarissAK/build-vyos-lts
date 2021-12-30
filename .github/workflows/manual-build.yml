@@ -4,7 +4,7 @@ on:
     inputs:
       branch:
         type: choice
-        description: VyOS branch to build from?
+        description: Select the VyOS branch to build from:
         options: 
         - equuleus
         - current
