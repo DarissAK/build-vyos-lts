@@ -1,4 +1,4 @@
-name: Build VyOS on GitHub
+name: Build VyOS
 on:
   workflow_dispatch:
     inputs:
