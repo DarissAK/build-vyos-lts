@@ -6,9 +6,9 @@ on:
         type: choice
         description: Branch
         options: 
-        - crux
         - equuleus
         - current
+        - crux
 
 jobs:
   build:
