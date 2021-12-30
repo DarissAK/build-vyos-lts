@@ -1,13 +1,4 @@
-[![build-vyos-lts Status](https://github.com/zengkid/build-vyos-lts/workflows/Build%20VyOS%20LTS/badge.svg)](https://github.com/zengkid/build-vyos-lts/actions)
+[![Build VyOS on GitHub](https://github.com/Veduco/build-vyos-lts/actions/workflows/manual-build.yml/badge.svg?branch=master)](https://github.com/Veduco/build-vyos-lts/actions/workflows/manual-build.yml)
 
 # build-vyos-lts
-
-    git tag <tagname>
-    
-    git push origin <tag>
-    
-e.g.
-
-    git tag v1.2.4
-    
-    git push origin v1.2.4
+This repository uses GitHub Actions to compile a given version of [VyOS](https://vyos.net/).
