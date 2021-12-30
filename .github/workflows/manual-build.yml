@@ -1,0 +1,61 @@
+name: Build VyOS on GitHub
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        type: choice
+        description: Branch
+        options: 
+        - crux
+        - equuleus
+        - current
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Get current date
+      id: date
+      run: echo "::set-output name=date::$(date -u +'%Y%m%d%H%M')"
+
+#    - name: Extract branch name
+#      shell: bash
+#      run: echo "##[set-output name=branch;]${GITHUB_REF#refs/heads/}"
+#      id: extract_branch
+
+    - name: Decipher version number crux
+      if: contains(github.event.inputs.branch,'crux')
+      run: echo "CODE_VERSION=1.2" >> $GITHUB_ENV
+
+    - name: Decipher version number equuleus
+      if: contains(github.event.inputs.branch,'equuleus')
+      run: echo "CODE_VERSION=1.3" >> $GITHUB_ENV
+
+    - name: Decipher version number sagitta
+      if: contains(github.event.inputs.branch,'current')
+      run: echo "CODE_VERSION=1.4" >> $GITHUB_ENV
+
+    - name: Set release version
+      run: echo "RELEASE_VERSION=${{ env.CODE_VERSION }}-rolling-${{ steps.date.outputs.date }}" >> $GITHUB_ENV
+
+    - name: Pull vyos-build docker image
+      run: docker pull vyos/vyos-build:${{ github.event.inputs.branch }}
+        
+    - name: Build iso
+      run: |
+        rm -rf vyos-build
+        git clone -b ${{ github.event.inputs.branch }} --single-branch https://github.com/vyos/vyos-build.git
+        cd vyos-build
+        docker run --rm --privileged -v $(pwd):/vyos -w /vyos vyos/vyos-build:${{ github.event.inputs.branch }} bash -c './configure --architecture amd64 --build-type release --build-by Veduco --version "${{ env.RELEASE_VERSION }}" && sudo make iso'
+   
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.myToken }}
+        file: vyos-build/build/vyos-${{ env.RELEASE_VERSION }}-amd64.iso
+        tag: ${{ env.RELEASE_VERSION }}
+        overwrite: true
+        file_glob: true
+
