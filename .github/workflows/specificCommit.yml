@@ -49,6 +49,7 @@ jobs:
         git checkout ${{ github.event.inputs.commit }}
         echo "SHA1=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
         filename="${{ env.RELEASE_VERSION }}-${{ env.SHA1 }}"
+        echo "Filename will be ${filename}"
         docker run --rm --privileged -v $(pwd):/vyos -w /vyos vyos/vyos-build:${{ github.event.inputs.branch }} bash -c './configure --architecture amd64 --build-type release --build-by Veduco --version "${filename}" && sudo make iso'
    
     - name: Upload binaries to release
