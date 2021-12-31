@@ -48,7 +48,7 @@ jobs:
         cd vyos-build
         git checkout ${{ github.event.inputs.commit }}
         SHA1=$(git rev-parse --short HEAD)
-        echo "SHA1=${SHA1}" >> $GITHUB_ENV
+        echo "COMMIT_ID=${SHA1}" >> $GITHUB_ENV
         versioninfo="${{ env.RELEASE_VERSION }}-${SHA1}"
         docker run --rm --privileged -v $(pwd):/vyos -w /vyos vyos/vyos-build:${{ github.event.inputs.branch }} bash -c './configure --architecture amd64 --build-type release --build-by Veduco --version "${versioninfo}" && sudo make iso'
    
@@ -56,7 +56,7 @@ jobs:
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.myToken }}
-        file: vyos-build/build/vyos-${{ env.RELEASE_VERSION }}-${{ env.SHA1 }}-amd64.iso
-        tag: ${{ env.RELEASE_VERSION }}-${{ env.SHA1 }}
+        file: vyos-build/build/vyos-${{ env.RELEASE_VERSION }}-${{ env.COMMIT_ID }}-amd64.iso
+        tag: ${{ env.RELEASE_VERSION }}-${{ env.COMMIT_ID }}
         overwrite: true
         file_glob: true
