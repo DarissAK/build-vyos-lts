@@ -47,9 +47,9 @@ jobs:
         git clone -b ${{ github.event.inputs.branch }} https://github.com/vyos/vyos-build.git
         cd vyos-build
         git checkout ${{ github.event.inputs.commit }}
-        SHA1=$(git rev-parse --short HEAD)
+        export SHA1=$(git rev-parse --short HEAD)
         echo "COMMIT_ID=${SHA1}" >> $GITHUB_ENV
-        versioninfo="${{ env.RELEASE_VERSION }}-${SHA1}"
+        export versioninfo="${{ env.RELEASE_VERSION }}-${SHA1}"
         docker run --rm --privileged -v $(pwd):/vyos -w /vyos vyos/vyos-build:${{ github.event.inputs.branch }} bash -c './configure --architecture amd64 --build-type release --build-by Veduco --version "${versioninfo}" && sudo make iso'
         ls -al 'build/'
    
