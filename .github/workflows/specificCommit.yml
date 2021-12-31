@@ -51,7 +51,7 @@ jobs:
         echo "COMMIT_ID=${SHA1}" >> $GITHUB_ENV
         versioninfo="${{ env.RELEASE_VERSION }}-${SHA1}"
         docker run --rm --privileged -v $(pwd):/vyos -w /vyos vyos/vyos-build:${{ github.event.inputs.branch }} bash -c './configure --architecture amd64 --build-type release --build-by Veduco --version "${versioninfo}" && sudo make iso'
-        ls -al 'vyos-build/build/'
+        ls -al 'build/'
    
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@v2
