@@ -56,7 +56,7 @@ jobs:
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.myToken }}
-        file: vyos-build/build/vyos-${{ env.RELEASE_VERSION }}-${{ env.COMMIT_ID }}-amd64.iso
+        file: vyos-build/build/vyos-*.iso
         tag: ${{ env.RELEASE_VERSION }}-${{ env.COMMIT_ID }}
         overwrite: true
         file_glob: true
