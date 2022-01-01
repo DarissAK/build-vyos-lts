@@ -43,10 +43,10 @@ jobs:
         
     - name: Build iso
       run: |
-        rm -rf vyos-build
+        sudo rm -rf vyos-build
         git clone -b ${{ github.event.inputs.branch }} https://github.com/vyos/vyos-build.git
         cd vyos-build
-        git checkout ${{ github.event.inputs.commit }}
+        git reset --hard ${{ github.event.inputs.commit }}
         export SHA1=$(git rev-parse --short HEAD)
         echo "COMMIT_ID=${SHA1}" >> $GITHUB_ENV
         export versioninfo="${{ env.RELEASE_VERSION }}-${SHA1}"
