@@ -1,4 +1,4 @@
-name: Build VyOS at Commit
+name: Build VyOS at Commit on Selfhosted
 on:
   workflow_dispatch:
     inputs:
