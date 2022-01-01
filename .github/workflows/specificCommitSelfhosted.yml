@@ -43,7 +43,7 @@ jobs:
         
     - name: Build iso
       run: |
-        sudo rm -rf vyos-build
+        rm -rf vyos-build
         git clone -b ${{ github.event.inputs.branch }} https://github.com/vyos/vyos-build.git
         cd vyos-build
         git reset --hard ${{ github.event.inputs.commit }}
